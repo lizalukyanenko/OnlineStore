@@ -77,13 +77,13 @@ function randomProduct(){
   return product = {
     name: productName[Math.floor(Math.random()*productName.length)],
     description: productDescription[Math.floor(Math.random()*productDescription.length)],
-    price: Math.floor(Math.random() * (2000000 - 250000) + 250000),
+    price: Math.floor(Math.floor(Math.random() * (2000000 - 250000 + 1) + 250000) / 100) * 100,
     category: productCategory,
     seller: {
       fullname: sellerFullname[Math.floor(Math.random()*sellerFullname.length)],
       rating: (Math.random() * 5).toFixed(1)
     },
-    publishDate: Date.now(),
+    publishDate: randomDate(new Date(2020, 0, 1), new Date()),
     address: {
       city: addressCity[Math.floor(Math.random()*addressCity.length)],
       street: addressStreet[Math.floor(Math.random()*addressStreet.length)],
@@ -98,6 +98,10 @@ function randomProduct(){
   };
 };
 
+function randomDate(start, end) {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+}
+
 function createProducts(){
   for (let i = 0; i < 7; i++) {
     products.push(randomProduct());
@@ -108,8 +112,8 @@ createProducts();
 
 function getProductList(products){
   const productList = document.querySelector(`.results__list`);
-  console.log(products);
-  const productMarkup = products.map(productItem =>`<li class="results__item product">
+  const productMarkup = products.map(productItem =>
+    `<li class="results__item product">
     <button class="product__favourite fav-add" type="button" aria-label="Добавить в избранное">
       <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M3 7C3 13 10 16.5 11 17C12 16.5 19 13 19 7C19 4.79086 17.2091 3 15 3C12 3 11 5 11 5C11 5 10 3 7 3C4.79086 3 3 4.79086 3 7Z" stroke="white" stroke-width="2" stroke-linejoin="floor"/>
@@ -117,7 +121,7 @@ function getProductList(products){
     </button>
     <div class="product__image">
       <div class="product__image-more-photo hidden">+2 фото</div>
-      <img src="img/house_4.png" width="318" height="220" alt="${productItem.name}">
+      <img src="${productItem.photos}" width="318" height="220" alt="${productItem.name}">
     </div>
     <div class="product__content">
       <h3 class="product__title">
@@ -125,7 +129,7 @@ function getProductList(products){
       </h3>
       <div class="product__price">${productItem.price}₽</div>
       <div class="product__address">${productItem.address.city}, ${productItem.address.street}</div>
-      <div class="product__date">Сегодня</div>
+      <div class="product__date">${productItem.publishDate.getFullYear()}</div>
     </div>
   </li>`).join(``);
   productList.innerHTML = ``;
