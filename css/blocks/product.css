@@ -5,7 +5,6 @@
   border-radius: 4px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
-  cursor: pointer;
 }
 .product__favourite {
   position: absolute;
@@ -14,6 +13,7 @@
 
 .product__image {
   position: relative;
+  cursor: pointer;
 }
 
 .product__image-more-photo {

@@ -69,17 +69,18 @@ const filtersType = [
   `flat`
 ];
 
+const monthNames = [`января`, `февраля`, `марта`, `апреля`, `мая`, `июня`, `июля`, `августа`, `сентября`, `октября`, `ноября`, `декабря`];
+
 let product;
 
 let products = [];
 
-let productIndex;
-
 const productList = document.querySelector(`.results__list`);
 const popup = document.querySelector(`.popup`);
 
-function randomProduct(){
+function randomProduct(i){
   return product = {
+    index: i,
     name: productName[Math.floor(Math.random()*productName.length)],
     description: productDescription[Math.floor(Math.random()*productDescription.length)],
     price: Math.floor(Math.floor(Math.random() * (2000000 - 250000 + 1) + 250000) / 100) * 100,
@@ -88,7 +89,7 @@ function randomProduct(){
       fullname: sellerFullname[Math.floor(Math.random()*sellerFullname.length)],
       rating: (Math.random() * 5).toFixed(1)
     },
-    publishDate: randomDate(new Date(2020, 0, 1), new Date()),
+    publishDate: renderDate(),
     address: {
       city: addressCity[Math.floor(Math.random()*addressCity.length)],
       street: addressStreet[Math.floor(Math.random()*addressStreet.length)],
@@ -107,9 +108,21 @@ function randomDate(start, end) {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
 
+function renderDate(){
+  const dateNow = new Date();
+  const date = randomDate(new Date(2022, 4, 10), dateNow);
+  if(`${date.getDate()} ${date.getMonth()} ${date.getFullYear()}` === `${dateNow.getDate()} ${dateNow.getMonth()} ${dateNow.getFullYear()}`){
+    return `Сегодня`;
+  }
+  if(`${date.getDate()}` === `${dateNow.getDate()-1}` && `${date.getMonth()} ${date.getFullYear()}` === `${dateNow.getMonth()} ${dateNow.getFullYear()}`){
+    return `Вчера`;
+  }
+  return `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+};
+
 function createProducts(){
   for (let i = 0; i < 7; i++) {
-    products.push(randomProduct());
+    products.push(randomProduct(i));
   };
 };
 
@@ -117,7 +130,7 @@ createProducts();
 
 function getProductList(products){
   const productMarkup = products.map(productItem =>
-    `<li class="results__item product">
+    `<li class="results__item product" data-index="${productItem.index}">
     <button class="product__favourite fav-add" type="button" aria-label="Добавить в избранное">
       <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M3 7C3 13 10 16.5 11 17C12 16.5 19 13 19 7C19 4.79086 17.2091 3 15 3C12 3 11 5 11 5C11 5 10 3 7 3C4.79086 3 3 4.79086 3 7Z" stroke="white" stroke-width="2" stroke-linejoin="floor"/>
@@ -133,7 +146,7 @@ function getProductList(products){
       </h3>
       <div class="product__price">${productItem.price} ₽</div>
       <div class="product__address">${productItem.address.city}, ${productItem.address.street}</div>
-      <div class="product__date">${productItem.publishDate.getFullYear()}</div>
+      <div class="product__date">${productItem.publishDate}</div>
     </div>
   </li>`).join(``);
   productList.innerHTML = ``;
@@ -141,19 +154,15 @@ function getProductList(products){
 };
 getProductList(products);
 
-
-function onProductClick(evt){
-  const productElem = evt.target.closest(`li`);
-  if (!productElem){
+function onOpenPopupClick(evt){
+  if(!(evt.target.closest(`img`)) && !(evt.target.closest(`a`))){
     return;
   };
-  // надо как-то передать сам элемент массива
-  // через productElement передается разметка
-  renderPopup(products[1]);
+  const indexProduct = evt.target.closest(`li`).dataset.index;
+  renderPopup(products[indexProduct]);
   popup.style.display = `block`;
 
-  const popupClose = popup.querySelector(`.popup__close`);
-  popupClose.addEventListener(`click`, onClosePopupClick);
+  popupCloseEvent();
 };
 
 function renderPopup(product){
@@ -163,7 +172,7 @@ function renderPopup(product){
         <path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418 -0.0976311 1.31658 -0.0976311 1.70711 0.292893L8 6.58579L14.2929 0.292893C14.6834 -0.0976311 15.3166 -0.0976311 15.7071 0.292893C16.0976 0.683418 16.0976 1.31658 15.7071 1.70711L9.41421 8L15.7071 14.2929C16.0976 14.6834 16.0976 15.3166 15.7071 15.7071C15.3166 16.0976 14.6834 16.0976 14.2929 15.7071L8 9.41421L1.70711 15.7071C1.31658 16.0976 0.683418 16.0976 0.292893 15.7071C-0.0976311 15.3166 -0.0976311 14.6834 0.292893 14.2929L6.58579 8L0.292893 1.70711C-0.0976311 1.31658 -0.0976311 0.683418 0.292893 0.292893Z"/>
       </svg>
     </button>
-    <div class="popup__date">${product.publishDate.getFullYear()}</div>
+    <div class="popup__date">${product.publishDate}</div>
     <h3 class="popup__title">${product.name}</h3>
     <div class="popup__price">${product.price} ₽</div>
     <div class="popup__columns">
@@ -195,15 +204,15 @@ function renderPopup(product){
         <ul class="popup__chars chars">
           <li class="chars__item">
             <div class="chars__name">Площадь</div>
-            <div class="chars__value">${product.area}</div>
+            <div class="chars__value">${product.filters.area}</div>
           </li>
           <li class="chars__item">
             <div class="chars__name">Количество комнат</div>
-            <div class="chars__value">${product.roomsCount}</div>
+            <div class="chars__value">${product.filters.roomsCount}</div>
           </li>
           <li class="chars__item">
             <div class="chars__name">Тип недвижимости</div>
-            <div class="chars__value">${product.type}</div>
+            <div class="chars__value">${product.filters.type}</div>
           </li>
         </ul>
         <div class="popup__seller seller seller--good">
@@ -230,12 +239,22 @@ function renderPopup(product){
   popup.insertAdjacentHTML(`afterbegin`, currentPopup);
 };
 
+function popupCloseEvent(){
+  const popupClose = popup.querySelector(`.popup__close`);
+  popupClose.addEventListener(`click`, onClosePopupClick);
+
+  document.addEventListener('keydown', function(evt) {
+    const key = evt.key;
+    if (key === "Escape"){
+      onClosePopupClick();
+    };
+  });
+};
+
 function onClosePopupClick(){
   popup.style.display = `none`;
 };
 
-
-
-productList.addEventListener(`click`, onProductClick);
+productList.addEventListener(`click`, onOpenPopupClick);
 
 
