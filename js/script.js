@@ -106,7 +106,7 @@ function randomProduct(i){
 
 function randomDate(start, end) {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-}
+};
 
 function renderDate(){
   const dateNow = new Date();
@@ -125,8 +125,6 @@ function createProducts(){
     products.push(randomProduct(i));
   };
 };
-
-createProducts();
 
 function getProductList(products){
   const productMarkup = products.map(productItem =>
@@ -152,7 +150,6 @@ function getProductList(products){
   productList.innerHTML = ``;
   productList.insertAdjacentHTML(`afterbegin`,productMarkup);
 };
-getProductList(products);
 
 function onOpenPopupClick(evt){
   if(!(evt.target.closest(`img`)) && !(evt.target.closest(`a`))){
@@ -241,6 +238,7 @@ function renderPopup(product){
 
 function popupCloseEvent(){
   const popupClose = popup.querySelector(`.popup__close`);
+  popupClose.focus();
   popupClose.addEventListener(`click`, onClosePopupClick);
 
   document.addEventListener('keydown', function(evt) {
@@ -255,6 +253,6 @@ function onClosePopupClick(){
   popup.style.display = `none`;
 };
 
+createProducts();
+getProductList(products);
 productList.addEventListener(`click`, onOpenPopupClick);
-
-
