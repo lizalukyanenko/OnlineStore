@@ -13,6 +13,7 @@
 
 .product__image {
   position: relative;
+  cursor: pointer;
 }
 
 .product__image-more-photo {
