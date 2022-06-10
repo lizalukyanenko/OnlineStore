@@ -95,4 +95,4 @@ function createProducts(){
     for (let i = 0; i < 7; i++) {
       products.push(randomProduct(i));
     };
-  };
+};

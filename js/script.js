@@ -51,6 +51,10 @@ function getProductList(products){
   productList.insertAdjacentHTML(`afterbegin`,productMarkup);
 };
 
+productList.addEventListener(`click`, onOpenPopupClick);
+
+// рандомное создание продуктов
 // createProducts();
 // getProductList(products);
-productList.addEventListener(`click`, onOpenPopupClick);
+
+getData(URL, onLoad, onError);

@@ -1,6 +1,7 @@
 const URL = `https://morfey216.github.io/online-store-bd/bd.json`;
 
 let products = [];
+
 function onLoad(data) {
   products = data.products.map((item, i) => {
     let product = Object.assign({}, item);
@@ -35,4 +36,3 @@ function getData(URL, onLoad, onError) {
         onError(error);
     });
 };
-getData(URL, onLoad, onError);
